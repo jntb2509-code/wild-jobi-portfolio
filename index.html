@@ -343,19 +343,80 @@
       color: var(--muted);
     }
 
-    .social-links { display: flex; gap: 1.5rem; }
+    .header-nav { display: flex; gap: 1.75rem; align-items: center; }
 
-    .social-links a {
+    .header-nav a, .header-nav button {
       font-family: 'Helvetica Neue', Arial, sans-serif;
-      font-size: 0.72rem;
+      font-size: 0.78rem;
+      font-weight: 400;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       text-decoration: none;
       color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-nav a:hover, .header-nav button:hover { color: var(--fg); }
+
+    /* ── About modal ── */
+    .about-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 998;
+      background: rgba(15,15,15,0.6);
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .about-overlay.open { display: flex; }
+
+    .about-panel {
+      background: var(--bg);
+      max-width: 560px;
+      width: 100%;
+      padding: 3rem;
+      position: relative;
+      animation: fadeUp 0.3s ease;
+    }
+
+    .about-panel h2 {
+      font-size: 1.1rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.25rem;
+    }
+
+    .about-panel p {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .about-close {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.5rem;
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 200;
+      line-height: 1;
       transition: color 0.2s;
     }
 
-    .social-links a:hover { color: var(--fg); }
+    .about-close:hover { color: var(--fg); }
   </style>
 </head>
 <body>
@@ -384,7 +445,28 @@
 <!-- Header -->
 <header>
   <a class="logo" href="#">Wild Jobi</a>
+  <nav class="header-nav">
+    <button id="about-btn">About</button>
+    <a href="https://www.instagram.com/Wild_jobi" target="_blank" rel="noopener" aria-label="Instagram">
+      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
+      </svg>
+    </a>
+  </nav>
 </header>
+
+<!-- About modal -->
+<div class="about-overlay" id="about-overlay">
+  <div class="about-panel">
+    <button class="about-close" id="about-close">&#215;</button>
+    <h2>About this work</h2>
+    <p>This series explores the concept of "Transitional Spaces," drawing inspiration from the psychoanalytic theories of D.W. Winnicott. Through the lens, I seek to capture the "potential space"—that third area of human experience which lies between the inner psychic reality and the external, shared world.</p>
+    <br>
+    <p>These photographs inhabit the thresholds: the quiet corners where imagination meets reality, and where the self begins to negotiate its place within the environment. By documenting these intermediate states, the project invites the viewer to linger in the ambiguity of the "not-me," reflecting on the delicate balance between holding on and letting go.</p>
+  </div>
+</div>
 
 <!-- Hero -->
 <div class="hero">
@@ -404,15 +486,6 @@
 <!-- Footer -->
 <footer>
   <p>© 2026 Jonathan Biran Photography. All rights reserved.</p>
-  <div class="social-links">
-    <a href="https://www.instagram.com/Wild_jobi" target="_blank" rel="noopener" aria-label="Instagram">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-        <circle cx="12" cy="12" r="4"/>
-        <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
-      </svg>
-    </a>
-  </div>
 </footer>
 
 <!-- Lightbox -->
@@ -655,6 +728,12 @@ function initLightbox() {
     if (e.key === 'ArrowRight') { idx = (idx + 1) % cards.length; load(idx); }
   });
 }
+
+// ── About modal ────────────────────────────────────────────────────────
+const aboutOverlay = document.getElementById('about-overlay');
+document.getElementById('about-btn').onclick = () => aboutOverlay.classList.add('open');
+document.getElementById('about-close').onclick = () => aboutOverlay.classList.remove('open');
+aboutOverlay.addEventListener('click', e => { if (e.target === aboutOverlay) aboutOverlay.classList.remove('open'); });
 
 init();
 </script>
