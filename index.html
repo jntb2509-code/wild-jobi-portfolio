@@ -15,6 +15,13 @@
       --gap: 1.5rem;
     }
 
+    html.dark {
+      --bg: #111110;
+      --fg: #e8e6e1;
+      --muted: #666;
+      --border: #2a2a28;
+    }
+
     body {
       background: var(--bg);
       color: var(--fg);
@@ -417,6 +424,25 @@
     }
 
     .about-close:hover { color: var(--fg); }
+
+    /* ── Dark mode toggle ── */
+    .dark-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      color: var(--muted);
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+    }
+
+    .dark-toggle:hover { color: var(--fg); }
+
+    .dark-toggle .icon-moon { display: block; }
+    .dark-toggle .icon-sun  { display: none; }
+    html.dark .dark-toggle .icon-moon { display: none; }
+    html.dark .dark-toggle .icon-sun  { display: block; }
   </style>
 </head>
 <body>
@@ -454,6 +480,24 @@
         <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
       </svg>
     </a>
+    <button class="dark-toggle" id="dark-toggle" aria-label="Toggle dark mode">
+      <!-- Moon (shown in light mode) -->
+      <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+      <!-- Sun (shown in dark mode) -->
+      <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/>
+        <line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/>
+        <line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+    </button>
   </nav>
 </header>
 
@@ -726,6 +770,15 @@ function initLightbox() {
     if (e.key === 'ArrowRight') { idx = (idx + 1) % cards.length; load(idx); }
   });
 }
+
+// ── Dark mode ──────────────────────────────────────────────────────────
+const html = document.documentElement;
+if (localStorage.getItem('darkMode') === 'on') html.classList.add('dark');
+
+document.getElementById('dark-toggle').addEventListener('click', () => {
+  html.classList.toggle('dark');
+  localStorage.setItem('darkMode', html.classList.contains('dark') ? 'on' : 'off');
+});
 
 // ── About modal ────────────────────────────────────────────────────────
 const aboutOverlay = document.getElementById('about-overlay');
