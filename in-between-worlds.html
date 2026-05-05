@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>In-Between Worlds — Wild Jobi</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f8f7f4;
+      --fg: #1a1a1a;
+      --muted: #888;
+      --border: #e0ddd8;
+      --gap: 1.5rem;
+    }
+
+    html.dark {
+      --bg: #111110;
+      --fg: #e8e6e1;
+      --muted: #666;
+      --border: #2a2a28;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Georgia', serif;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 300;
+      text-decoration: none;
+      color: var(--fg);
+    }
+
+    nav { display: flex; gap: 2rem; align-items: center; }
+
+    nav a {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+
+    nav a:hover, nav a.active { color: var(--fg); }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 5rem 2.5rem 3rem;
+      max-width: 640px;
+    }
+
+    .hero h1 {
+      font-size: 2.2rem;
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ── Filters ── */
+    .filters {
+      padding: 0 2.5rem 2rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      min-height: 2.5rem;
+    }
+
+    .filter-btn {
+      background: none;
+      border: 1px solid var(--border);
+      padding: 0.35rem 1rem;
+      border-radius: 2rem;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--fg);
+      border-color: var(--fg);
+      color: var(--bg);
+    }
+
+    /* ── Section label ── */
+    .section-label {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── Grid ── */
+    .grid {
+      padding: 0 2.5rem 5rem;
+      columns: 3;
+      column-gap: var(--gap);
+    }
+
+    @media (max-width: 900px) { .grid { columns: 2; } }
+    @media (max-width: 560px) {
+      .grid { columns: 1; padding: 0 1.25rem 3rem; }
+      header { padding: 1rem 1.25rem; }
+      .hero, .filters { padding-left: 1.25rem; padding-right: 1.25rem; }
+      .section-label { padding-left: 1.25rem; }
+    }
+
+    .card {
+      break-inside: avoid;
+      margin-bottom: var(--gap);
+      cursor: pointer;
+    }
+
+    .card-img {
+      width: 100%;
+      overflow: hidden;
+      background: var(--border);
+    }
+
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s;
+      filter: saturate(0.9);
+    }
+
+    .card:hover .card-img img {
+      transform: scale(1.03);
+      filter: saturate(1.05);
+    }
+
+    .card-meta { padding: 0.75rem 0 0.25rem; }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.2rem;
+    }
+
+    .card-sub {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── Skeleton ── */
+    .skeleton-grid {
+      padding: 0 2.5rem 5rem;
+      columns: 3;
+      column-gap: var(--gap);
+    }
+
+    @media (max-width: 900px) { .skeleton-grid { columns: 2; } }
+    @media (max-width: 560px) { .skeleton-grid { columns: 1; padding: 0 1.25rem 3rem; } }
+
+    .skeleton-card { break-inside: avoid; margin-bottom: var(--gap); }
+
+    .skeleton-img {
+      width: 100%;
+      background: linear-gradient(90deg, #e8e6e1 25%, #f0ede8 50%, #e8e6e1 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 2px;
+    }
+
+    .skeleton-line {
+      height: 0.8rem;
+      border-radius: 2px;
+      margin-top: 0.75rem;
+      background: linear-gradient(90deg, #e8e6e1 25%, #f0ede8 50%, #e8e6e1 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+
+    .skeleton-line.short { width: 55%; margin-top: 0.4rem; }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── State messages ── */
+    .state-msg {
+      padding: 4rem 2.5rem;
+      text-align: center;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 2;
+    }
+
+    .state-msg strong {
+      display: block;
+      font-size: 1rem;
+      color: var(--fg);
+      margin-bottom: 0.5rem;
+    }
+
+    .state-msg code {
+      background: var(--border);
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      font-size: 0.8rem;
+      color: var(--fg);
+    }
+
+    /* ── Lightbox ── */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: rgba(15,15,15,0.96);
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .lightbox.open { display: flex; }
+
+    .lightbox-inner {
+      position: relative;
+      max-width: 900px;
+      width: 100%;
+      animation: fadeUp 0.3s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .lightbox-inner img {
+      width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      display: block;
+    }
+
+    .lightbox-caption {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .lightbox-caption h2 { color: #fff; font-size: 1rem; font-weight: 400; }
+
+    .lightbox-caption span {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: -2.5rem; right: 0;
+      background: none; border: none;
+      color: rgba(255,255,255,0.5);
+      font-size: 1.5rem; cursor: pointer;
+      line-height: 1; transition: color 0.2s;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 200;
+    }
+
+    .lightbox-close:hover { color: #fff; }
+
+    .lightbox-nav {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      background: none; border: none;
+      color: rgba(255,255,255,0.4);
+      font-size: 2rem; cursor: pointer; padding: 1rem;
+      transition: color 0.2s;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 200; line-height: 1;
+    }
+
+    .lightbox-nav:hover { color: #fff; }
+    .lightbox-nav.prev { left: -4rem; }
+    .lightbox-nav.next { right: -4rem; }
+
+    @media (max-width: 700px) {
+      .lightbox-nav.prev { left: -1rem; }
+      .lightbox-nav.next { right: -1rem; }
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    footer p {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .header-nav { display: flex; gap: 1.75rem; align-items: center; }
+
+    .header-nav a, .header-nav button {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-nav a:hover, .header-nav button:hover { color: var(--fg); }
+
+    /* ── About modal ── */
+    .about-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 998;
+      background: rgba(15,15,15,0.6);
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .about-overlay.open { display: flex; }
+
+    .about-panel {
+      background: var(--bg);
+      max-width: 560px;
+      width: 100%;
+      padding: 3rem;
+      position: relative;
+      animation: fadeUp 0.3s ease;
+    }
+
+    .about-panel h2 {
+      font-size: 1.1rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.25rem;
+    }
+
+    .about-panel p {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .about-close {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.5rem;
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 200;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .about-close:hover { color: var(--fg); }
+
+    /* ── Dark mode toggle ── */
+    .dark-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      color: var(--muted);
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+    }
+
+    .dark-toggle:hover { color: var(--fg); }
+
+    .dark-toggle .icon-moon { display: block; }
+    .dark-toggle .icon-sun  { display: none; }
+    html.dark .dark-toggle .icon-moon { display: none; }
+    html.dark .dark-toggle .icon-sun  { display: block; }
+  </style>
+</head>
+<body>
+
+<!--
+  ╔══════════════════════════════════════════════════════════╗
+  ║  CLOUDINARY CONFIG                                       ║
+  ║                                                          ║
+  ║  1. Sign up free at cloudinary.com                       ║
+  ║  2. Paste your Cloud Name below                          ║
+  ║  3. In Cloudinary: Settings → Security →                 ║
+  ║     uncheck "Resource list" to allow public listing      ║
+  ║  4. Upload your photos. Use folders for categories:      ║
+  ║     e.g. portrait/, landscape/, street/                  ║
+  ║  5. All photos need the tag:  portfolio                  ║
+  ║     (set this in your upload preset or add manually)     ║
+  ╚══════════════════════════════════════════════════════════╝
+-->
+<script>
+  const CONFIG = {
+    CLOUD_NAME: 'dwome9zli',
+    TAG:        'portfolio'           // photos must have this tag in Cloudinary
+  };
+</script>
+
+<!-- Header -->
+<header>
+  <a class="logo" href="index.html">Wild Jobi</a>
+  <nav class="header-nav">
+    <button id="about-btn">About</button>
+    <a href="https://www.instagram.com/Wild_jobi" target="_blank" rel="noopener" aria-label="Instagram">
+      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
+      </svg>
+    </a>
+    <button class="dark-toggle" id="dark-toggle" aria-label="Toggle dark mode">
+      <!-- Moon (shown in light mode) -->
+      <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+      <!-- Sun (shown in dark mode) -->
+      <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/>
+        <line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/>
+        <line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+    </button>
+  </nav>
+</header>
+
+<!-- About modal -->
+<div class="about-overlay" id="about-overlay">
+  <div class="about-panel">
+    <button class="about-close" id="about-close">&#215;</button>
+    <h2>About this work</h2>
+    <p>Through a hybrid photographic workflow, Wild Jobi investigates the psychological landscapes of the "in-between." His work utilizes both traditional analog formats and modern digital tools to capture the atmospheric qualities of transition. This interplay of mediums reflects a deep interest in the concepts of object relations and psychological boundaries. Each image serves as a study of how environments function as "holding worlds," inviting the viewer to engage in the delicate play between subjective imagination and objective observation.</p>
+  </div>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>In-Between Worlds:<br>A Study of Potential Space.</h1>
+  <p>This series explores the concept of "Transitional Spaces," drawing inspiration from the psychoanalytic theories of D.W. Winnicott. Through the lens, I seek to capture the "potential space"—that third area of human experience which lies between the inner psychic reality and the external, shared world. These photographs inhabit the thresholds: the quiet corners where imagination meets reality, and where the self begins to negotiate its place within the environment. By documenting these intermediate states, the project invites the viewer to linger in the ambiguity of the "not-me," reflecting on the delicate balance between holding on and letting go.</p>
+</div>
+
+<!-- Filters -->
+<div class="filters" id="filters"></div>
+
+<!-- Section label -->
+<div class="section-label" id="section-label">Loading…</div>
+
+<!-- Content -->
+<div id="content"></div>
+
+<!-- Footer -->
+<footer>
+  <p>© 2026 Jonathan Biran Photography. All rights reserved.</p>
+</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-inner">
+    <button class="lightbox-close" id="lb-close">&#215;</button>
+    <button class="lightbox-nav prev" id="lb-prev">&#8592;</button>
+    <button class="lightbox-nav next" id="lb-next">&#8594;</button>
+    <img id="lb-img" src="" alt="">
+    <div class="lightbox-caption">
+      <h2 id="lb-title"></h2>
+      <span id="lb-loc"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Cloudinary URL builder ─────────────────────────────────────────────
+
+function cloudUrl(publicId, width = 800) {
+  return `https://res.cloudinary.com/${CONFIG.CLOUD_NAME}/image/upload/w_${width},q_auto,f_auto/${publicId}`;
+}
+
+// ── Clean filename → readable title ───────────────────────────────────
+
+function cleanName(publicId) {
+  const filename = publicId.split('/').pop(); // strip folder path
+  return filename.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+// ── Extract folder from public_id ─────────────────────────────────────
+
+function folderOf(publicId) {
+  const parts = publicId.split('/');
+  return parts.length > 1 ? parts.slice(0, -1).join('/') : null;
+}
+
+function formatFolder(folder) {
+  if (!folder) return null;
+  return folder.split('/').pop().replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+// ── Skeleton loader ────────────────────────────────────────────────────
+
+function showSkeleton() {
+  const heights = ['260px','180px','320px','200px','280px','160px','300px','220px','240px'];
+  const grid = document.createElement('div');
+  grid.className = 'skeleton-grid';
+  heights.forEach(h => {
+    grid.innerHTML += `
+      <div class="skeleton-card">
+        <div class="skeleton-img" style="height:${h}"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line short"></div>
+      </div>`;
+  });
+  document.getElementById('content').appendChild(grid);
+}
+
+// ── Fetch from Cloudinary ──────────────────────────────────────────────
+
+async function fetchPhotos() {
+  const url = `https://res.cloudinary.com/${CONFIG.CLOUD_NAME}/image/list/${CONFIG.TAG}.json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Cloudinary error ${res.status}`);
+  const data = await res.json();
+  return data.resources || [];
+}
+
+// ── Init ───────────────────────────────────────────────────────────────
+
+async function init() {
+  if (!CONFIG.CLOUD_NAME || CONFIG.CLOUD_NAME === 'YOUR_CLOUD_NAME') {
+    document.getElementById('section-label').textContent = '';
+    document.getElementById('content').innerHTML = `
+      <div class="state-msg">
+        <strong>Almost there!</strong>
+        Open <code>index.html</code>, find the <code>CONFIG</code> block,<br>
+        and replace <code>YOUR_CLOUD_NAME</code> with your Cloudinary cloud name.
+      </div>`;
+    return;
+  }
+
+  showSkeleton();
+
+  try {
+    const resources = await fetchPhotos();
+
+    document.getElementById('content').innerHTML = '';
+
+    if (resources.length === 0) {
+      document.getElementById('section-label').textContent = '';
+      document.getElementById('content').innerHTML = `
+        <div class="state-msg">
+          <strong>No photos found</strong>
+          Upload photos to Cloudinary and tag them <code>${CONFIG.TAG}</code>.<br>
+          Also make sure "Resource list" is enabled in Settings → Security.
+        </div>`;
+      return;
+    }
+
+    // Map to photo objects and shuffle
+    const photos = resources
+      .map(r => ({ publicId: r.public_id, title: '', category: formatFolder(folderOf(r.public_id)) }))
+      .sort(() => Math.random() - 0.5);
+
+    // Update label
+    document.getElementById('section-label').textContent =
+      `Selected Work — ${photos.length} photo${photos.length !== 1 ? 's' : ''}`;
+
+    buildFilters(photos);
+    buildGrid(photos, 'all');
+    initLightbox();
+
+  } catch (err) {
+    document.getElementById('content').innerHTML = '';
+    document.getElementById('section-label').textContent = '';
+    document.getElementById('content').innerHTML = `
+      <div class="state-msg">
+        <strong>Could not load photos</strong>
+        ${err.message}<br><br>
+        Make sure "Resource list" is disabled in Cloudinary → Settings → Security.
+      </div>`;
+    console.error(err);
+  }
+}
+
+// ── Filters ────────────────────────────────────────────────────────────
+
+function buildFilters(photos) {
+  const filtersEl = document.getElementById('filters');
+  const categories = [...new Set(photos.map(p => p.category).filter(Boolean))].sort();
+
+  if (categories.length === 0) { filtersEl.style.display = 'none'; return; }
+
+  const allBtn = btn('All', true, () => { activate(allBtn); buildGrid(photos, 'all'); initLightbox(); });
+  filtersEl.appendChild(allBtn);
+
+  categories.forEach(cat => {
+    const b = btn(cat, false, () => { activate(b); buildGrid(photos, cat); initLightbox(); });
+    filtersEl.appendChild(b);
+  });
+}
+
+function btn(label, active, onClick) {
+  const b = document.createElement('button');
+  b.className = 'filter-btn' + (active ? ' active' : '');
+  b.textContent = label;
+  b.addEventListener('click', onClick);
+  return b;
+}
+
+function activate(el) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── Grid ───────────────────────────────────────────────────────────────
+
+function buildGrid(photos, activeCategory) {
+  const filtered = activeCategory === 'all'
+    ? photos
+    : photos.filter(p => p.category === activeCategory);
+
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+  grid.id = 'grid';
+
+  filtered.forEach(photo => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.publicId = photo.publicId;
+    card.dataset.title    = photo.title;
+    card.dataset.loc      = photo.category || '';
+
+    card.innerHTML = `
+      <div class="card-img">
+        <img src="${cloudUrl(photo.publicId, 800)}" alt="${photo.title}" loading="lazy">
+      </div>`;
+
+    grid.appendChild(card);
+  });
+
+  const contentEl = document.getElementById('content');
+  contentEl.innerHTML = '';
+  contentEl.appendChild(grid);
+}
+
+// ── Lightbox ───────────────────────────────────────────────────────────
+
+function initLightbox() {
+  const lightbox = document.getElementById('lightbox');
+  const lbImg    = document.getElementById('lb-img');
+  const lbTitle  = document.getElementById('lb-title');
+  const lbLoc    = document.getElementById('lb-loc');
+  let cards = [], idx = 0;
+
+  function load(i) {
+    const c = cards[i];
+    lbImg.src           = cloudUrl(c.dataset.publicId, 1600);
+    lbTitle.textContent = c.dataset.title;
+    lbLoc.textContent   = c.dataset.loc;
+  }
+
+  document.querySelectorAll('.card').forEach(c => {
+    c.addEventListener('click', () => {
+      cards = [...document.querySelectorAll('.card')];
+      idx = cards.indexOf(c);
+      load(idx);
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  document.getElementById('lb-close').onclick = () => {
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  document.getElementById('lb-prev').onclick = e => {
+    e.stopPropagation();
+    idx = (idx - 1 + cards.length) % cards.length;
+    load(idx);
+  };
+
+  document.getElementById('lb-next').onclick = e => {
+    e.stopPropagation();
+    idx = (idx + 1) % cards.length;
+    load(idx);
+  };
+
+  lightbox.onclick = e => {
+    if (e.target === lightbox) { lightbox.classList.remove('open'); document.body.style.overflow = ''; }
+  };
+
+  document.addEventListener('keydown', e => {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape')     { lightbox.classList.remove('open'); document.body.style.overflow = ''; }
+    if (e.key === 'ArrowLeft')  { idx = (idx - 1 + cards.length) % cards.length; load(idx); }
+    if (e.key === 'ArrowRight') { idx = (idx + 1) % cards.length; load(idx); }
+  });
+}
+
+// ── Dark mode ──────────────────────────────────────────────────────────
+const html = document.documentElement;
+if (localStorage.getItem('darkMode') === 'on') html.classList.add('dark');
+
+document.getElementById('dark-toggle').addEventListener('click', () => {
+  html.classList.toggle('dark');
+  localStorage.setItem('darkMode', html.classList.contains('dark') ? 'on' : 'off');
+});
+
+// ── About modal ────────────────────────────────────────────────────────
+const aboutOverlay = document.getElementById('about-overlay');
+document.getElementById('about-btn').onclick = () => aboutOverlay.classList.add('open');
+document.getElementById('about-close').onclick = () => aboutOverlay.classList.remove('open');
+aboutOverlay.addEventListener('click', e => { if (e.target === aboutOverlay) aboutOverlay.classList.remove('open'); });
+
+init();
+</script>
+
+</body>
+</html>
